@@ -1,0 +1,5 @@
+{
+"diffuse": "diablo/diablo3_pose_diffuse.jpg",
+"specular": "diablo/diablo3_pose_spec.jpg",
+"xyzNormal": "diablo/diablo3_pose_nm.jpg"
+}

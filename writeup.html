@@ -1,0 +1,159 @@
+<head>
+    <title> COS426 Assignment 4 &mdash; Rasterizer &mdash; Writeup</title>
+    <link href="css/style.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body id='body_writeup'>
+    <script src="js/student.js"> </script>
+    <script src="coursejs/writeup.js"> </script>
+    <div class="main_div">
+
+        <h1>COS426 Assignment 4 &mdash; Rasterizer</h1>
+        <h1>Switch to: <a href='index.html'>Interactive Renderer</a></h1>
+        <br>
+        <div id='collaboration'>
+            <div>
+            Collaboration Statement:
+            </div>
+                <br>
+            <div>
+                <em>
+                    Under penalty of academic dishonesty (as outlined in RRR)
+                    my digital signature below verifies that the following is true:
+                    <ul>
+                        <p>
+                            that all images in this writeup were generated directly by my solution code
+                            or provided by the course staff (exception: art contest submissions
+                            may pass through intermediary software like GIMP)
+                        </p>
+                        <p>
+                            that no other student has viewed my writeup explanations
+                            or my writeup images
+                        </p>
+                        <p>
+                            that my solution code is my own work; particularly that
+                            my solution was not copied from any other
+                            student's solution code, and that no other student
+                            copied their solution directly code from me
+                        </p>
+                        <p>
+                            that I did not discuss assignment specifics or view
+                            the solution code of any other student besides that of my (optional) partner
+                        </p>
+                        <p>
+                            that I have followed all other course collaboration
+                            and course plagiarism policies as written on the course website.
+                        </p>
+                    </ul>
+                </em>
+                <p>
+                    <strong>
+                        Yunzi Shi  (yunzis)
+                    </strong>
+                </p>
+
+                <p>
+                    Collaborated with: N/A
+                </p>
+                <br>
+            </div>
+        </div>
+        <div class='selectable'>
+        <h1 id='student'></h1>
+        <br>
+        Features Implemented:
+<ul>
+<li>(2.0) <a href='#Perspective+Projection'>Perspective Projection</a></li>
+<li>(1.0) <a href='#Phong+Reflection+Model'>Phong Reflection Model</a></li>
+<li>(1.0) <a href='#Bounding+Box'>Bounding Box</a></li>
+<li>(1.0) <a href='#Barycentric+Coordinates'>Barycentric Coordinates</a></li>
+<li>(2.0) <a href='#Flat+Shader'>Flat Shader</a></li>
+<li>(2.0) <a href='#Gouraud+Shader'>Gouraud Shader</a></li>
+<li>(2.0) <a href='#Phong+Shader'>Phong Shader</a></li>
+<li>(2.0) <a href='#Diffuse+and+Specular+Mapping'>Diffuse and Specular Mapping</a></li>
+<li>(2.0) <a href='#XYZ+Normal+Mapping'>XYZ Normal Mapping</a></li>
+<li>(0.5) <a href='#Optimization+Contest'>Optimization Contest</a></li>
+        </ul></div>
+
+<p><hr><p><a name='Perspective+Projection'></a><h1>Perspective Projection</h1><p><hr><p>
+For each vertex, I first applyed the viewMat transformation to convert the coordinates
+to normalized device coordinates. I skip the projection if any vertex fall out of the
+depth of the camera space. I then convert the NDC coordinates to screen space coordinates
+by mapping the vertice according to the width and height of the x-y plane.
+
+<br> <a href='index.html?Camera=[2.8646,2.2455,1.5975];[0.47999,-0.82485,0.29873];[0,0,0]&Mesh=cube.obj;false&Resolution=320x240&Shading_Model=Wire&Ambient=[0,0,0]&Diffuse=[255,255,255]&Specular=[255,255,255]&Shininess=5'>
+  Camera=[2.8646,2.2455,1.5975];[0.47999,-0.82485,0.29873];[0,0,0]&Mesh=cube.obj;false&Resolution=320x240&Shading_Model=Wire&Ambient=[0,0,0]&Diffuse=[255,255,255]&Specular=[255,255,255]&Shininess=5</a>
+
+<br><img src='results/perspective_projection.jpg'>
+<p><hr><p><a name='Phong+Reflection+Model'></a><h1>Phong Reflection Model</h1><p><hr><p>
+I implemented Phone Reflection according to the formula given. For the ambient term,
+I simply added the ambient color from the material (multiplied by I_al = (1,1,1)). For the
+specular term, I found the mirror reflect and eye vectors and calculated the specular term
+with specular and shininess values of the material.
+
+<p><hr><p><a name='Bounding+Box'></a><h1>Bounding Box</h1><p><hr><p>
+I first found the minimum and maximum x and y coordinates from the three vertices, then
+I convert them to integers and make sure they are within the the screen dimensions.
+
+<p><hr><p><a name='Barycentric+Coordinates'></a><h1>Barycentric Coordinates</h1><p><hr><p>
+I computed the Barycentric Coordinates with the formulae given in the slides. If any weight
+is negative, which means the pixel lies out of the triangle, return undefined.
+
+<p><hr><p><a name='Flat+Shader'></a><h1>Flat Shader</h1><p><hr><p>
+I first compute the face normal and centroid by averaging the vertex normals and positions.
+Then I derive the texture (if applicable) and color from the Phong reflection model.
+Finally, iterate through the pixels within the bounding box. For pixels within the
+triangle and z depth is closer to previously stored z value, render the pixel.
+
+<br> <a href='index.html?Camera=[-3.7257,4.6729,1.6024];[-0.62123,-0.64694,0.4422];[0,0,0]&Mesh=cow.obj;false&Resolution=640x480&Shading_Model=Flat&Ambient=#483c14&Diffuse=#2d87ac&Specular=#a2c9d2&Shininess=5'>Camera=[-3.7257,4.6729,1.6024];[-0.62123,-0.64694,0.4422];[0,0,0]&Mesh=cow.obj;false&Resolution=640x480&Shading_Model=Flat&Ambient=#483c14&Diffuse=#2d87ac&Specular=#a2c9d2&Shininess=5</a>
+
+<br><img src='results/flat_shader.jpg'>
+<p><hr><p><a name='Gouraud+Shader'></a><h1>Gouraud Shader</h1><p><hr><p>
+  First determine the color of the vertices. If texture mapping is applicable, calculate
+  the phong material with the uvs given. Then, for each pixel within the triangle and is closer
+  than the previously store z value at the screen position, linearly interpolate the color
+  with Barycentric coordinates and colors at the vertices.
+
+<br> <a href='index.html?Camera=[-3.7257,4.6729,1.6024];[-0.62123,-0.64694,0.4422];[0,0,0]&Mesh=cow.obj;false&Resolution=640x480&Shading_Model=Gouraud&Ambient=#483c14&Diffuse=#2d87ac&Specular=#a2c9d2&Shininess=5'>Camera=[-3.7257,4.6729,1.6024];[-0.62123,-0.64694,0.4422];[0,0,0]&Mesh=cow.obj;false&Resolution=640x480&Shading_Model=Gouraud&Ambient=#483c14&Diffuse=#2d87ac&Specular=#a2c9d2&Shininess=5</a>
+
+<br><img src='results/gouraud_shader.jpg'>
+<p><hr><p><a name='Phong+Shader'></a><h1>Phong Shader</h1><p><hr><p>
+For each pixel within the bounding box, check if the pixel falls within the triangle and
+depth is closer than previously stored and if so,
+interpolate the normal, world position, texture mapping, and xyz normal mapping, if applicable,
+with barycentric coordinates. Finally render the pixel with the color derived from
+Phong reflection model.
+
+<br> <a href='index.html?Camera=[-3.7257,4.6729,1.6024];[-0.62123,-0.64694,0.4422];[0,0,0]&Mesh=cow.obj;false&Resolution=640x480&Shading_Model=Phong&Ambient=#483c14&Diffuse=#2d87ac&Specular=#a2c9d2&Shininess=5'>Camera=[-3.7257,4.6729,1.6024];[-0.62123,-0.64694,0.4422];[0,0,0]&Mesh=cow.obj;false&Resolution=640x480&Shading_Model=Phong&Ambient=#483c14&Diffuse=#2d87ac&Specular=#a2c9d2&Shininess=5</a>
+
+<br><img src='results/phong_shader.jpg'>
+<p><hr><p><a name='Diffuse+and+Specular+Mapping'></a><h1>Diffuse and Specular Mapping</h1><p><hr><p>
+  Whenever uvs is defined, interpolate the x and y positions in uv mapping with the
+  Barycentric coordinates and the uv coordinates at the vertices.
+
+<br> <a href='index.html?Camera=[-1.1618,1.5919,2.0102];[-0.35231,-0.82205,0.44734];[0,0,0]&Mesh=boggiebody.obj;true&Mesh=boggieeyes.obj;true&Mesh=boggiehead.obj;true&Resolution=640x480&Shading_Model=Phong&Ambient=#483c14&Diffuse=#2d87ac&Specular=#a2c9d2&Shininess=5'>Camera=[-1.1618,1.5919,2.0102];[-0.35231,-0.82205,0.44734];[0,0,0]&Mesh=boggiebody.obj;true&Mesh=boggieeyes.obj;true&Mesh=boggiehead.obj;true&Resolution=640x480&Shading_Model=Phong&Ambient=#483c14&Diffuse=#2d87ac&Specular=#a2c9d2&Shininess=5</a>
+
+<br><img src='results/diffuse_specular.jpg'>
+<p><hr><p><a name='XYZ+Normal+Mapping'></a><h1>XYZ Normal Mapping</h1><p><hr><p>
+Whenever material.xyzMapping is defined, first find the corresponding RGB value in
+the normal mapping with the uv coordinates. Then convert the RGB value to normal by
+remapping the R, G, and B values. Finally, normalize the vector. The computed normal
+is used in getting the phong material at the pixel, creating bumps in the rendered mesh.
+
+<br> <a href='index.html?Camera=[0.24217,-1.1267,1.6445];[0.10907,-0.81248,-0.5727];[0,0,0]&Mesh=afrhead.obj;true&Mesh=afreye.obj;true&Resolution=800x600&Shading_Model=Phong&Ambient=[0,0,0]&Diffuse=[255,255,255]&Specular=[255,255,255]&Shininess=5'>Camera=[0.24217,-1.1267,1.6445];[0.10907,-0.81248,-0.5727];[0,0,0]&Mesh=afrhead.obj;true&Mesh=afreye.obj;true&Resolution=800x600&Shading_Model=Phong&Ambient=[0,0,0]&Diffuse=[255,255,255]&Specular=[255,255,255]&Shininess=5</a>
+
+<br><img src='results/xyz_normal.jpg'>
+<p><hr><p><a name='Optimization+Contest'></a><h1>Optimization Contest</h1><p><hr><p>
+  FPS ratio: ~0.14
+  <br>Baseline Hardware Performance: ~21 FPS
+  <br>Phong Shader Performance: ~3 FPS
+<br>I used a flag to indicate whether the pointer along the sweepline has been through the interior
+of the triangle. When it reaches the right end, I break out of the loop and move to the row of pixels
+below.
+<br>(I also tried to implement the sweep-line algorithm described in lecture 15, but I could not fix the bug.
+Basically, I was missing many triangles and was not significantly improving the FPS.
+I included a image of the buggy code below have kept the code commented out in the submission.)
+<br><img src='results/buggy.jpg'>
+</div>
+</body>
+</html>
