@@ -16,15 +16,14 @@ Reflection.phongReflectionModel = function(vertex, view, normal, lightPos, phong
   color.plus(phongMaterial.diffuse.copy().multipliedBy(ndotl));
 
   // Ambient color and specular color
-  // ----------- STUDENT CODE BEGIN ------------
-  // ----------- Our reference solution uses 12 lines of code.
+
   color.plus(phongMaterial.ambient); // ambient color
   //specular color
   let r = light_dir.clone().negate().reflect(normal);
   let v = view.clone().sub(vertex).normalize();
   let rdotv = Math.max(0, r.dot(v));
   color.plus(phongMaterial.specular.copy().multipliedBy(rdotv ** phongMaterial.shininess));
-  // ----------- STUDENT CODE END ------------
+
 
   return color;
 };
@@ -207,8 +206,7 @@ Renderer.projectVertices = function(verts, viewMat) {
   // (you still need z for z buffering)
   var projectedVerts = [];
 
-  // ----------- STUDENT CODE BEGIN ------------
-  // ----------- Our reference solution uses 12 lines of code.
+
   for (var i = 0; i < 3; i++) {
     projectedVerts[i] = new THREE.Vector4(verts[i].x, verts[i].y, verts[i].z, 1.0);
 
@@ -221,7 +219,7 @@ Renderer.projectVertices = function(verts, viewMat) {
     projectedVerts[i].x = (projectedVerts[i].x + 1) / 2 * this.width;
     projectedVerts[i].y = (projectedVerts[i].y + 1) / 2 * this.height;
   }
-  // ----------- STUDENT CODE END ------------
+
 
   return projectedVerts;
 };
@@ -237,8 +235,7 @@ Renderer.computeBoundingBox = function(projectedVerts) {
   box.maxX = -1;
   box.maxY = -1;
 
-  // ----------- STUDENT CODE BEGIN ------------
-  // ----------- Our reference solution uses 14 lines of code.
+
   let minX = Math.min(projectedVerts[0].x, projectedVerts[1].x, projectedVerts[2].x);
   let minY = Math.min(projectedVerts[0].y, projectedVerts[1].y, projectedVerts[2].y);
   let maxX = Math.max(projectedVerts[0].x, projectedVerts[1].x, projectedVerts[2].x);
@@ -248,7 +245,7 @@ Renderer.computeBoundingBox = function(projectedVerts) {
   box.minY = Math.max(0, Math.floor(minY));
   box.maxX = Math.min(this.width - 1, Math.ceil(maxX));
   box.maxY = Math.min(this.height - 1, Math.ceil(maxY));
-  // ----------- STUDENT CODE END ------------
+
   return box;
 };
 
@@ -256,8 +253,7 @@ Renderer.computeBarycentric = function(projectedVerts, x, y) {
   var triCoords = [];
   // (see https://fgiesen.wordpress.com/2013/02/06/the-barycentric-conspirac/)
   // return undefined if (x,y) is outside the triangle
-  // ----------- STUDENT CODE BEGIN ------------
-  // ----------- Our reference solution uses 15 lines of code.
+
   let wa = ((projectedVerts[1].x - projectedVerts[2].x) * (projectedVerts[2].y - y)
   - (projectedVerts[2].x - x) * (projectedVerts[1].y - projectedVerts[2].y))
   / ((projectedVerts[0].x - projectedVerts[2].x) * (projectedVerts[1].y - projectedVerts[2].y)
@@ -271,7 +267,7 @@ Renderer.computeBarycentric = function(projectedVerts, x, y) {
   let wc = 1 - wa - wb;
   if (wc < 0) return undefined;
   triCoords = [wa, wb, wc];
-  // ----------- STUDENT CODE END ------------
+
   return triCoords;
 };
 
@@ -297,8 +293,7 @@ Renderer.drawTriangleFlat = function(verts, projectedVerts, normals, uvs, materi
   // Flat shader
   // Color of each face is computed based on the face normal
   // (average of vertex normals) and face centroid.
-  // ----------- STUDENT CODE BEGIN ------------
-  // ----------- Our reference solution uses 52 lines of code.
+
   // compute face normal and centroid
   let normal = new THREE.Vector3().addVectors(normals[0], normals[1]).add(normals[2]).divideScalar(3).normalize();
   let centroid = new THREE.Vector3().addVectors(verts[0], verts[1]).add(verts[2]).divideScalar(3);
@@ -328,14 +323,13 @@ Renderer.drawTriangleFlat = function(verts, projectedVerts, normals, uvs, materi
       this.zBuffer[x][y] = z;
     }
   }
-  // ----------- STUDENT CODE END ------------
+
 };
 
 Renderer.drawTriangleGouraud = function(verts, projectedVerts, normals, uvs, material) {
   // Gouraud shader
   // Interpolate the color for each pixel in the triangle using the barycentric coordinate.
-  // ----------- STUDENT CODE BEGIN ------------
-  // ----------- Our reference solution uses 49 lines of code.
+
   // find colors at the vertices
   let colors = [];
   if (uvs === undefined) {
@@ -366,7 +360,7 @@ Renderer.drawTriangleGouraud = function(verts, projectedVerts, normals, uvs, mat
       this.zBuffer[x][y] = z;
     }
   }
-  // ----------- STUDENT CODE END ------------
+
 };
 
 Renderer.drawTrianglePhong = function(verts, projectedVerts, normals, uvs, material) {
@@ -379,8 +373,7 @@ Renderer.drawTrianglePhong = function(verts, projectedVerts, normals, uvs, mater
   // (3) XYZ normal mapping: If xyz normal texture exists for the material,
   //                         convert the RGB value of the XYZ normal texture at the uv coordinates
   //                         to a normal vector and apply it at the pixel location.
-  // ----------- STUDENT CODE BEGIN ------------
-  // ----------- Our reference solution uses 62 lines of code.
+
   let phongMaterial;
   if (uvs === undefined) { // texture mapping
     phongMaterial = this.getPhongMaterial(uvs, material);
@@ -531,7 +524,7 @@ Renderer.drawTrianglePhong = function(verts, projectedVerts, normals, uvs, mater
     xL = Math.floor(xL + deltaL);
     xR = Math.ceil(xR + deltaR);
   }*/
-  // ----------- STUDENT CODE END ------------
+
 };
 
 Renderer.drawTriangle = function(verts, normals, uvs, material, viewMat) {
